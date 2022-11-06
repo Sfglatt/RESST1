@@ -25,7 +25,7 @@ jmv::efa(
 	factorSummary = TRUE,
 	modelFit = TRUE,
 	kmo = TRUE,
-	duplicate = 4) #remove 35 items 
+	duplicate = 4) #remove 34 items 
   
   ##round 3 #use remaining 25 items from round 2
  data = data,
