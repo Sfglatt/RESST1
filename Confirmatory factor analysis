@@ -1,10 +1,62 @@
 
 Confirmatory factor analysis
-#sample_2
-##sample_3
-###sample_4
+#sample_1
+##sample_2
+###sample_3
+####sample_4
 
-#sample_2
+#sample_1
+jmv::cfa(
+    data = data,
+    factors = list(
+        list(
+            label="Factor 1",
+            vars=c(
+                "Q80_74",
+                "Q80_76",
+                "Q80_77",
+                "Q80_66",
+                "Q80_86",
+                "Q80_79")),      
+        list(
+            label="Factor 2",
+            vars=c(
+                "Q80_18",
+                "Q80_61",
+                "Q80_98",
+                "Q80_16",
+                "Q80_20",
+                "Q80_24",
+                "Q80_62")),        
+        list(
+            label="Factor 3",
+            vars=c(
+                "Q80_31",
+                "Q80_40",
+                "Q80_44",
+                "Q80_33")),
+        list(
+            label="Factor 4",
+            vars=c(
+                "Q80_47",
+                "Q80_10",
+                "Q80_3",
+                "Q80_2"))),
+    resCov = NULL,
+    stdEst = TRUE,
+    resInterceptEst = TRUE,
+    fitMeasures = c(
+        "cfi",
+        "tli",
+        "rmsea",
+        "srmr",
+        "aic",
+        "bic"),
+    pathDiagram = TRUE,
+    mi = TRUE)
+as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
+
+##sample_2
     jmv::cfa(
     data = data,
     factors = list(
@@ -55,7 +107,7 @@ Confirmatory factor analysis
     mi = TRUE)
 as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
 
- ##sample_3
+ ###sample_3
     jmv::cfa(
     data = data,
     factors = list(
@@ -106,7 +158,7 @@ as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to c
     mi = TRUE)
 as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
 
-###sample_4
+####sample_4
     jmv::cfa(
     data = data,
     factors = list(
