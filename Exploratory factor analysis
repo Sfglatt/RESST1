@@ -1,6 +1,6 @@
 Exploratory factor analysis 
 
-#sample_1 
+#Sample_1 
 #4 rounds, criteria for removal=items with low communalities (<.30), low factor loadings (<.50), and high cross-loadings (>.40) and theoretical model fit
 
 ##round 1 #use all 105 scale items
