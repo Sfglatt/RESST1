@@ -1,11 +1,11 @@
 
 Confirmatory factor analysis
-#sample_1
-##sample_2
-###sample_3
-####sample_4
+#Sample_1
+##Sample_2
+###Sample_3
+####Sample_4
 
-#sample_1
+#Sample_1
 jmv::cfa(
     data = data,
     factors = list(
@@ -56,7 +56,7 @@ jmv::cfa(
     mi = TRUE)
 as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
 
-##sample_2
+##Sample_2
     jmv::cfa(
     data = data,
     factors = list(
@@ -107,7 +107,7 @@ as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to c
     mi = TRUE)
 as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
 
- ###sample_3
+ ###Sample_3
     jmv::cfa(
     data = data,
     factors = list(
@@ -158,7 +158,7 @@ as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to c
     mi = TRUE)
 as.data.frame("Factor 1", "Factor 2", "Factor 3", "Factor 4") #use Rj model to create data frame
 
-####sample_4
+####Sample_4
     jmv::cfa(
     data = data,
     factors = list(
