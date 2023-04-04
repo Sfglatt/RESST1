@@ -1,0 +1,527 @@
+---
+title: "R_RESST_Syntax"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+# required packages
+if (!require("tidyverse")) {install.packages("tidyverse"); require("tidyverse")}
+if (!require("ggplot2")) {install.packages("ggplot2"); require("ggplot2")}
+if (!require("ggthemes")) {install.packages("ggthemes"); require("ggthemes")}
+if (!require("lavaan")) {install.packages("lavaan"); require("lavaan")}
+if (!require("lavaanPlot")) {install.packages("lavaanPlot"); require("lavaanPlot")}
+if (!require("knitr")) {install.packages("knitr"); require("knitr")}
+if (!require("psych")) {install.packages("psych"); require("psych")}
+if (!require("semPlot")) {install.packages("semPlot"); require("semPlot")}
+if (!require("semTools")) {install.packages("semTools"); require("semTools")}
+if (!require("wesanderson")) {install.packages("wesanderson"); require("wesanderson")}
+if (!require("mosaic")) {install.packages("mosaic"); require("mosaic")}
+if (!require("dplyr")) {install.packages("dplyr"); require("dplyr")}
+if (!require("GPArotation")) {install.packages("GPArotation"); require("GPArotation")}
+if (!require("jmv")) {install.packages("jmv"); require("jmv")}
+if (!require("corrplot")) {install.packages("corrplot"); require("corrplot")}
+if (!require("readxl")) {install.packages("readxl"); require("readxl")}
+if (!require("ltm")) {install.packages("ltm"); require("ltm")}
+if (!require("cocron")) {install.packages("cocron"); require("cocron")}
+if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
+#import data 
+#data = 'Sample_1' on OSF
+
+df1 <- df[,c(Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 'Q80_6', 'Q80_7', 'Q80_8', 'Q80_9', 'R9', 'Q80_11', 'Q80_12', 'Q80_13', 'Q80_14', 'Q80_15', 'R4', 'Q80_17', 'R1', 'Q80_19', 'R5', 'Q80_21', 'Q80_22', 'Q80_23', 'R6', 'Q80_25', 'Q80_26', 'Q80_27', 'Q80_28', 'Q80_29', 'Q80_30', 'R18', 'Q80_32', 'R21', 'Q80_34', 'Q80_35', 'Q80_36', 'Q80_37', 'Q80_38', 'Q80_39', 'R19', 'Q80_41', 'Q80_42', 'Q80_43', 'R20', 'Q80_45', 'Q80_46', 'R8', 'Q80_48', 'Q80_49', 'Q80_50', 'Q80_51', 'Q80_52', 'Q80_53', 'Q80_54', 'Q80_55', 'Q80_56', 'Q80_57', 'Q80_58', 'Q80_59', 'Q80_60', 'R2', 'R7', 'Q80_63', 'Q80_64', 'Q80_65', 'R15', 'Q80_67', 'Q80_68', 'Q80_69', 'Q80_70', 'Q80_71', 'Q80_72', 'Q80_73', 'R12', 'Q80_75', 'R13', 'R14', 'Q80_78', 'R17', 'Q80_80', 'Q80_81', 'Q80_82', 'Q80_83', 'Q80_84', 'Q80_85', 'R16', 'Q80_87', 'Q80_88', 'Q80_89', 'Q80_90', 'Q80_91', 'Q80_92', 'Q80_93', 'Q80_94', 'Q80_95', 'Q80_96', 'Q80_97', 'R3', 'Q80_99', 'Q80_100', 'Q80_101', 'Q80_102', 'Q80_103', 'Q80_104', 'Q80_105')]
+#create first item removal data frame all items (105).
+# checks
+# missingness check
+colSums(is.na(df1)) 
+missings <- colSums(is.na(df1)) 
+
+# KMO and Bartlett
+KMO(df1) 
+cortest.bartlett(df1) 
+
+# Eigenvalues
+ev <- eigen(cor(df1)) # get eigenvalues
+ev$values
+
+# Scree and parallel analysis
+par(mar = c(1, 1, 1, 1)) # adjust plot size for x error
+scree(df1, pc=FALSE) # Scree plot. 7-8 factors
+fa.parallel(df1, fa="fa") # parallel analysis suggests 7 factors
+
+###exploratory factor analysis###
+# data = 'Sample_1' on OSF
+# 4 rounds, criteria for removal = items with low communalities (<.30), low factor loadings (<.50), and high cross-loadings (>.40) and theoretical model fit
+# round one (all 105 items)
+
+fa.parallel(df1, fa="fa") # Parallal analysis suggests 7 factors
+
+# make a data frame for each round which can be used later as input for corr matrix and manually setting factors 
+# df1 = first round EFA
+# df2 = second round EFA
+# df3 = third round EFA
+# df4 = fourth round EFA
+# df5 = sample 2 corrmatrix/regression
+# df6 = sample 3 corrmatrix/regression
+
+jmv::efa(
+  data = df1,
+    vars = vars(Q80_1, R11, R10, Q80_4, Q80_5, Q80_6, Q80_7, Q80_8, Q80_9, R9, Q80_11, Q80_12, Q80_13, Q80_14, Q80_15, R4, Q80_17, R1, Q80_19, R5, Q80_21, Q80_22, Q80_23, R6, Q80_25, Q80_26, Q80_27, Q80_28, Q80_29, Q80_30, R18, Q80_32, R21, Q80_34, Q80_35, Q80_36, Q80_37, Q80_38, Q80_39, R19, Q80_41, Q80_42, Q80_43, R20, Q80_45, Q80_46, R8, Q80_48, Q80_49, Q80_50, Q80_51, Q80_52, Q80_53, Q80_54, Q80_55, Q80_56, Q80_57, Q80_58, Q80_59, Q80_60, R2, R7, Q80_63, Q80_64, Q80_65, R15, Q80_67, Q80_68, Q80_69, Q80_70, Q80_71, Q80_72, Q80_73, R12, Q80_75, R13, R14, Q80_78, R17, Q80_80, Q80_81, Q80_82, Q80_83, Q80_84, Q80_85, R16, Q80_87, Q80_88, Q80_89, Q80_90, Q80_91, Q80_92, Q80_93, Q80_94, Q80_95, Q80_96, Q80_97, R3, Q80_99, Q80_100, Q80_101, Q80_102, Q80_103, Q80_104, Q80_105),
+    extraction = "pa", # principal axis factoring 
+    hideLoadings = 0.32, # initially suppress < .32 loadings
+    sortLoadings = TRUE,
+    eigen = TRUE,
+    factorCor = TRUE, # interfactor correlations
+    factorSummary = TRUE,
+    modelFit = TRUE,
+    kmo = TRUE,
+    bartlett = TRUE) # remove 46 items 
+
+# round two (59 remaining items from round 1)
+
+df2 <- df1[,c('R1','R2','R3','R4','R5',
+              'R6','R7','R8','R9','R10',
+              'R11','R12','R13','R14','R15',
+              'R16','R17','R18','R19','R20',
+              'R21','Q80_23','Q80_17','Q80_52','Q80_81',
+              'Q80_104','Q80_13','Q80_15','Q80_22','Q80_27',
+              'Q80_28', 'Q80_29','Q80_30','Q80_34','Q80_36',
+              'Q80_38','Q80_39','Q80_41','Q80_42','Q80_43',
+              'Q80_46','Q80_48','Q80_54','Q80_68','Q80_69',
+              'Q80_7','Q80_72','Q80_75','Q80_78','Q80_8',
+              'Q80_82','Q80_83','Q80_84','Q80_85','Q80_89',
+              'Q80_9','Q80_92','Q80_93','Q80_99')] # create second data frame
+
+fa.parallel(df2, fa="fa") # Parallal analysis suggests 5 factors 
+
+jmv::efa(
+  data = df2,
+  vars = vars(R1, R2, R3, R4, R5, 
+              R6, R7, R8, R9, R10, 
+              R11, R12, R13, R14, R15, 
+              R16, R17, R18, R19, R20, 
+              R21, Q80_23, Q80_17, Q80_52, Q80_81, 
+              Q80_104, Q80_13, Q80_15, Q80_22, Q80_27, 
+              Q80_28, Q80_29, Q80_30, Q80_34, Q80_36, 
+              Q80_38, Q80_39, Q80_41, Q80_42, Q80_43, 
+              Q80_46, Q80_48, Q80_54, Q80_68, Q80_69, 
+              Q80_7, Q80_72, Q80_75, Q80_78, Q80_8, 
+              Q80_82, Q80_83, Q80_84, Q80_85, Q80_89, 
+              Q80_9, Q80_92, Q80_93, Q80_99),
+  extraction = "pa",
+  hideLoadings = 0.32,
+  sortLoadings = TRUE,
+  eigen = TRUE,
+  factorCor = TRUE,
+  factorSummary = TRUE,
+  modelFit = TRUE,
+  kmo = TRUE,
+  bartlett = TRUE) # remove 34 items
+
+# round three (use remaining 25 items)
+
+df3 <- df1[,c('R1','R2','R3','R4','R5',
+              'R6','R7','R8','R9','R10',
+              'R11','R12','R13','R14','R15',
+              'R16','R17','R18','R19','R20',
+              'R21','Q80_23','Q80_17','Q80_52','Q80_81')] # create third data frame
+
+fa.parallel(df3, fa="fa") # suggests 4 factors 
+jmv::efa(
+data = df3,
+  vars = vars(R1, R2, R3, R4, R5, 
+              R6, R7, R8, R9, R10, 
+              R11, R12, R13, R14, R15, 
+              R16, R17, R18, R19, R20, 
+              R21, Q80_23, Q80_17, Q80_52, Q80_81),
+  extraction = "pa",
+  hideLoadings = 0.32,
+  sortLoadings = TRUE,
+  eigen = TRUE,
+  factorCor = TRUE,
+  factorSummary = TRUE,
+  modelFit = TRUE,
+  kmo = TRUE,
+  bartlett = TRUE) # remove 4 items
+
+# round four (remaining 21 items)
+
+df4 <- df1[,c('R1','R2','R3','R4','R5',
+              'R6','R7','R8','R9','R10',
+              'R11','R12','R13','R14','R15',
+              'R16','R17','R18','R19','R20',
+              'R21')] # create fourth data frame
+
+fa.parallel(df4, fa="fa") # suggests 4 factors 
+
+jmv::efa(
+  data = df4,
+  vars = vars(R1, R2, R3, R4, R5, 
+              R6, R7, R8, R9, R10, 
+              R11, R12, R13, R14, R15, 
+              R16, R17, R18, R19, R20, 
+              R21),
+  extraction = "pa",
+  hideLoadings = 0.32,
+  sortLoadings = TRUE,
+  eigen = TRUE,
+  factorCor = TRUE,
+  factorSummary = TRUE,
+  modelFit = TRUE,
+  kmo = TRUE,
+  bartlett = TRUE)
+
+# manually set EFA  
+# manually set factors for best fit
+
+r_matrix <- corr.test(df)$r # correlation matrix using df1-4
+cor.plot(r_matrix) # create data frame
+
+# use this to set 3 and 5 factors for the final round EFA to determine which model has best fit
+
+# three factors 
+fa_3 <- fa(r_matrix, # fa_x, x = factors
+           nfactors = 3, 
+           rotate = "oblimin", 
+           fm = "pa")
+fa_3 # full results 
+fa.diagram(fa_3) # diagram 
+
+# five factors
+fa_5 <- fa(r_matrix, # fa_x, x = factors
+           nfactors = 5, 
+           rotate = "oblimin", 
+           fm = "pa")
+fa_5 # four factors has best fit 
+
+###confirmatory factor analysis###
+# standard CFA
+# data = 'Sample_1', 'Sample_2-3', and 'Sample_4' on OSF
+## Variables consistent between samples
+
+model_4f <- "
+self =~  R1 + R2 + R3 + R4 + R5 + R6 + R7
+life =~ R8 + R9 + R10 + R11
+social =~ R12 + R13 + R14 + R15 + R16 + R17
+understand =~ R18 + R19 + R20 + R21
+"
+
+# Model fit
+fit_mod4f <- cfa(model_4f, data = df)
+summary(fit_mod4f, fit.measures = TRUE, standardized = TRUE)
+
+# Model figure
+semPaths(fit_mod4f, "par", weighted = FALSE, nCharNodes = 7, shapeMan = "rectangle", sizeMan = 8, sizeMan2 = 5)
+
+# second-order CFA
+# data = 'Sample_1', 'Sample_2-3', and 'Sample_4' on OSF
+# RESST variables consistent between samples
+
+model_4f_2order <- "
+self =~  R1 + R2 + R3 + R4 + R5 + R6 + R7
+life =~ R8 + R9 + R10 + R11
+social =~ R12 + R13 + R14 + R15 + R16 + R17
+understand =~ R18 + R19 + R20 + R21
+RESST =~ self + life + social + understand 
+"
+# higher order fit
+fit_mod4f_2order <- cfa(model_4f_2order, df)
+summary(fit_mod4f_2order, fit.measures = TRUE, standardized = TRUE)
+
+# higher order visual
+semPaths(fit_mod4f_2order, "std", weighted = FALSE, nCharNodes = 7, 
+         shapeMan = "rectangle", sizeMan = 8, sizeMan2 = 5)
+
+# variance-covariance matrix
+lavInspect(fit_mod4f_2order, what = "sampstat") #1
+
+lavInspect(fit_mod4f_2order, what = "implied") #2. the better 1 & 2 are, the better the data fits(the closer the variances and covariances recalculated from the estimated parameters are to the empirical variances and covariances.)
+
+# Measurement invariance
+# data = 'Sample_1' on OSF
+
+measurementInvariance(model = model_4f, # replace with appropriate lavaan figure
+                      data = df, group = "Q11_Gender", # look on OSF data dictionary for gender variable
+                      strict = TRUE)
+summary(measurementInvariance(model = model_4f, data = df, group = "Q11_Gender" # gender variable, strict = TRUE))
+
+#fit indices
+# data = 'Sample_1' on OSF
+
+AVE(fit_mod4f, obs.var = TRUE, 
+    omit.imps = c("no.conv", "no.se"),
+    omit.factors = character(0), 
+    dropSingle = TRUE, 
+    return.df = TRUE) # AVE
+
+reliability(fit_mod4f_2order) # Cronbach's alpha, omega, AVE
+
+# input Cronbachs alphas for 95% confidence intervals: 
+cronbach.alpha.CI(.96, 502, 21, conf.level = 0.95) 
+cronbach.alpha.CI(.95, 502,6, conf.level = 0.95) 
+cronbach.alpha.CI(.94, 502, 4, conf.level = 0.95)
+cronbach.alpha.CI(.86, 502, 7, conf.level = 0.95)
+cronbach.alpha.CI(.87, 502, 4, conf.level = 0.95)
+
+omegaFromSem(fit_mod4f,m=NULL,flip=TRUE,plot=TRUE) # account for variances
+
+reliabilityL2(fit_mod4f_2order2, 'RESST') # omega higher order (L2)
+
+compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
+           config = character(0), shared = character(0), higher = character(0),
+           return.total = TRUE, dropSingle = TRUE, omit.factors = character(0),
+           omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
+           return.df = TRUE) # composite reliability
+
+# Pearson correlations between RESST and related/unrelated measures
+## sample 2
+# data = 'Sample_2' on OSF
+
+df5 <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
+             'RESST.social.worthT1','RESST.self.understandT1',
+              'Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
+              'FSCQ.sim','FSCQ.vivid','SWLS','Q51','SBQR')]
+
+cor(df5, method = "pearson") # correlation matrix
+
+res1 <- rcorr(as.matrix(df5)) # for p-values
+
+# Extract the correlation coefficients
+res1$r
+# Extract p-values
+res1$P
+
+# flattenCorrMatrix
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+flattenCorrMatrix(res1$r, res1$P)
+```
+
+## sample 3
+```{r}
+# data = 'Sample_3' on OSF
+
+df6 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
+             'RESST.Social.worth','RESST.Self.understanding',
+              'RAS.total','RAS.NDS','RAS.PCH','RAS.WAH','RAS.GSO',
+              'RAS.ROO','RSE','INQ.tot','INQ.PB',
+              'INQ.TB','MLQ.Pres','MLQ.Search','FSCQ','SBQR', 'Q51', 'QOL')]
+
+cor(df6, method = "pearson") # correlation matrix
+
+res2 <- rcorr(as.matrix(df6)) # for p-values
+
+flattenCorrMatrix(res2$r, res2$P)
+
+# multiple regression RESST subscales with outcome variables
+# data = 'Sample_2' on OSF
+regr_SBQR <- lm(SBQR ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_SBQR_item_4 <- lm(Q51 ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_depression <- lm(Dep_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_anxiety <- lm(anx_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_stress <- lm(stress_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_FSCQ <- lm(FSCQ ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_FSCQ.pos <- lm(FSCQ.pos ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_FSCQ.sim <- lm(FSCQ.sim ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_FSCQ.viv <- lm(FSCQ.vivid ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_SWLS <- lm(SWLS ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+
+# data = 'Sample_3' on OSF
+regr_INQ <- lm(INQ.tot ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_INQ.PB <- lm(INQ.PB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_INQ.TB <- lm(INQ.TB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_QOLS <- lm(QOL ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_MLQ.P <- lm(MLQ.Pres ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_MLQ.S <- lm(MLQ.Search ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS <- lm(RAS.total ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS.NDS <- lm(RAS.NDS ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS.PCH <- lm(RAS.PCH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS.WAH <- lm(RAS.WAH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS.GSO <- lm(RAS.GSO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RAS.ROO <- lm(RAS.ROO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_RSE <- lm(RSE ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+# model summaries
+summary(regr_SBQR)
+summary(regr_SBQR_item_4)
+summary(regr_depression)
+summary(regr_anxiety)
+summary(regr_stress)
+summary(regr_anxiety)
+summary(regr_FSCQ)
+summary(regr_FSCQ.pos)
+summary(regr_FSCQ.sim)
+summary(regr_FSCQ.viv)
+summary(regr_SWLS)
+summary(regr_INQ)
+summary(regr_INQ.TB)
+summary(regr_INQ.PB)
+summary(regr_QOLS)
+summary(regr_MLQ.S)
+summary(regr_MLQ.P)
+summary(regr_RAS)
+summary(regr_RAS.NDS)
+summary(regr_RAS.GSO)
+summary(regr_RAS.ROO)
+summary(regr_RAS.WAH)
+summary(regr_RAS.PCH)
+summary(regr_RSE)
+
+# RESST vs RAS incremental prediction
+# data = 'Sample_3' on OSF
+
+regr_RSE.1 <- lm(RSE ~ RAS.total, df6)
+regr_RSE.2 <- lm(RSE ~ RAS.total + RESST.Total, df6)
+regr_MLQ.P.1 <- lm(MLQ.Pres ~ RAS.total, df6)
+regr_MLQ.P.2 <- lm(MLQ.Pres ~ RAS.total + RESST.Total, df6)
+regr_QOL.1 <- lm(QOL ~ RAS.total, df6)
+regr_QOL.2 <- lm(QOL ~ RAS.total + RESST.Total, df6)
+regr_INQ.1 <- lm(INQ.tot ~ RAS.total, df6)
+regr_INQ.2 <- lm(INQ.tot ~ RAS.total + RESST.Total, df6)
+regr_INQ.PB.1 <- lm(INQ.PB ~ RAS.total, df6)
+regr_INQ.PB.2 <- lm(INQ.PB ~ RAS.total + RESST.Total, df6)
+regr_INQ.TB.1 <- lm(INQ.TB ~ RAS.total, df6)
+regr_INQ.TB.2 <- lm(INQ.TB ~ RAS.total + RESST.Total, df6)
+regr_FSCQ.1 <- lm(FSCQ ~ RAS.total, df6)
+regr_FSCQ.2 <- lm(FSCQ ~ RAS.total + RESST.Total, df6)
+regr_SBQR.1 <- lm(SBQR ~ RAS.total, df6)
+regr_SBQR.2 <- lm(SBQR ~ RAS.total + RESST.Total, df6)
+regr_SBQR_item_4.1 <- lm(Q51 ~ RAS.total, df6)
+regr_SBQR_item_4.2 <- lm(Q51 ~ RAS.total + RESST.Total, df6)
+```
+
+# model fit differences
+summary(regr_RSE.1)
+summary(regr_RSE.2) # calcuate R-sq change
+anova(regr_RSE.1,regr_RSE.2) # p-value between models
+
+summary(regr_MLQ.P.1)
+summary(regr_MLQ.P.2)
+anova(regr_MLQ.P.1,regr_MLQ.P.2)
+
+summary(regr_QOl.1)
+summary(regr_QOl.2)
+anova(regr_QOl.1,regr_QOl.2)
+
+summary(regr_INQ.1)
+summary(regr_INQ.2)
+anova(regr_INQ.1,regr_INQ.2)
+
+summary(regr_INQ.PB.1)
+summary(regr_INQ.PB.2)
+anova(regr_INQ.PB.1,regr_INQ.PB.2)
+
+summary(regr_INQ.TB.1)
+summary(regr_INQ.TB.2)
+anova(regr_INQ.TB.1,regr_INQ.TB.2)
+
+summary(regr_FSCQ.1)
+summary(regr_FSCQ.2)
+anova(regr_FSCQ.1,regr_FSCQ.2)
+
+summary(regr_SBQR.1)
+summary(regr_SBQR.2)
+anova(regr_SBQR.1,regr_SBQR.2)
+
+summary(regr_SBQR_item_4.1)
+summary(regr_SBQR_item_4.2)
+anova(regr_SBQR_item_4.1,regr_SBQR_item_4.2)
+
+```
+
+# save .RData
+```{r}
+save.image(file = paste0(id_name,".RData"))
+sessionInfo()
+loadhistory(file = ".Rhistory")
+savehistory(file = ".Rhistory")
+```
+
+#references 
+```{r}
+version$version.string 
+citation("tidyverse")
+citation("ggplot2")
+citation("ggthemes")
+citation("lavaan")
+citation("lavaanPlot")
+citation("knitr")
+citation("psych")
+citation("semPlot")
+citation("semTools")
+citation("wesanderson")
+citation("mosaic")
+citation("dplyr")
+citation("GPArotation")
+citation("jmv")
+citation("corrplot")
+citation("readxl")
+citation("ltm")
+citation("cocron")
+citation("Hmisc")
+
+##[1] "R version 4.2.2 (2022-10-31 ucrt)"
+
+#T o cite package ‘tidyverse’ in publications use:
+## Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+# To cite ggplot2 in publications, please use
+## H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+# To cite package ‘ggthemes’ in publications use:
+## Arnold J (2021). _ggthemes: Extra Themes, Scales and Geoms for 'ggplot2'_. R package version 4.2.4,<https://CRAN.R-project.org/package=ggthemes>.
+
+# To cite lavaan in publications use:
+## Yves Rosseel (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. https://doi.org/10.18637/jss.v048.i02
+
+# To cite package ‘lavaanPlot’ in publications use:
+## Lishinski A (2021). _lavaanPlot: Path Diagrams for 'Lavaan' Models via 'DiagrammeR'_. R package version 0.6.2,<https://CRAN.R-project.org/package=lavaanPlot>.
+
+# To cite the 'knitr' package in publications use:
+## Yihui Xie (2023). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.42.
+
+# To cite the psych package in publications use:
+## Revelle, W. (2022) psych: Procedures for Personality and Psychological Research, Northwestern University, Evanston, Illinois, USA, https://CRAN.R-project.org/package=psych Version = 2.2.9.
+
+# To cite package ‘semPlot’ in publications use:
+## Epskamp S (2022). _semPlot: Path Diagrams and Visual Analysis of Various SEM Packages' Output_. R package version 1.1.6, <https://CRAN.R-project.org/package=semPlot>.
+
+# To cite package ‘semTools’ in publications use:
+## Jorgensen, T. D., Pornprasertmanit, S., Schoemann, A. M., & Rosseel, Y. (2022). semTools: Useful tools for structural equation modeling. R package version 0.5-6. Retrieved from https://CRAN.R-project.org/package=semTools
+
+# To cite package ‘wesanderson’ in publications use:
+## Ram K, Wickham H (2018). _wesanderson: A Wes Anderson Palette Generator_. R package version 0.3.6, <https://CRAN.R-project.org/package=wesanderson>.
+
+# To cite mosaic in publications, please use:
+## R. Pruim, D. T. Kaplan and N. J. Horton. The mosaic Package: Helping Students to 'Think with Data' Using R (2017). The R Journal, 9(1):77-102.
+
+# To cite package ‘dplyr’ in publications use:
+## Wickham H, François R, Henry L, Müller K, Vaughan D (2023)._dplyr: A Grammar of Data Manipulation_. R package version 1.1.0, <https://CRAN.R-project.org/package=dplyr>.
+
+# To cite package 'GPArotation' in publications use:
+## Bernaards, Coen A. and Jennrich, Robert I. (2005) Gradient Projection Algorithms and Software for ArbitraryRotation Criteria in Factor Analysis, Educational and Psychological Measurement: 65, 676-696.
+
+# To cite package ‘jmv’ in publications use:
+## Selker R, Love J, Dropmann D, Moreno V (2022). _jmv: The 'jamovi' Analyses_. R package version 2.3.4, <https://CRAN.R-project.org/package=jmv>.
+
+# To cite package ‘readxl’ in publications use:
+## Wickham H, Bryan J (2023). _readxl: Read Excel Files_. R package version 1.4.2, <https://CRAN.R-project.org/package=readxl>.
+
+# To cite package 'ltm' in publications use:
+## Dimitris Rizopoulos (2006). ltm: An R package for Latent Variable Modelling and Item Response Theory Analyses, Journal of Statistical Software, 17 (5), 1-25. URL: https://doi.org/10.18637/jss.v017.i05
+
+# To cite cocron in publications use:
+## Diedenhofen, B. (2016). cocron: Statistical Comparisons of Two or more Alpha Coefficients (Version 1.0-1). Available from  http://comparingcronbachalphas.org
+
+# To cite package ‘Hmisc’ in publications use:
+## Harrell Jr F (2023). _Hmisc: Harrell Miscellaneous_. R package version 4.8-0, <https://CRAN.R-project.org/package=Hmisc>.
+
+```
+```
+
