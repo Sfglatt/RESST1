@@ -25,11 +25,42 @@ if (!require("readxl")) {install.packages("readxl"); require("readxl")}
 if (!require("ltm")) {install.packages("ltm"); require("ltm")}
 if (!require("cocron")) {install.packages("cocron"); require("cocron")}
 if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
-#import data 
-#data = 'Sample_1' on OSF
 
-df1 <- df[,c(Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 'Q80_6', 'Q80_7', 'Q80_8', 'Q80_9', 'R9', 'Q80_11', 'Q80_12', 'Q80_13', 'Q80_14', 'Q80_15', 'R4', 'Q80_17', 'R1', 'Q80_19', 'R5', 'Q80_21', 'Q80_22', 'Q80_23', 'R6', 'Q80_25', 'Q80_26', 'Q80_27', 'Q80_28', 'Q80_29', 'Q80_30', 'R18', 'Q80_32', 'R21', 'Q80_34', 'Q80_35', 'Q80_36', 'Q80_37', 'Q80_38', 'Q80_39', 'R19', 'Q80_41', 'Q80_42', 'Q80_43', 'R20', 'Q80_45', 'Q80_46', 'R8', 'Q80_48', 'Q80_49', 'Q80_50', 'Q80_51', 'Q80_52', 'Q80_53', 'Q80_54', 'Q80_55', 'Q80_56', 'Q80_57', 'Q80_58', 'Q80_59', 'Q80_60', 'R2', 'R7', 'Q80_63', 'Q80_64', 'Q80_65', 'R15', 'Q80_67', 'Q80_68', 'Q80_69', 'Q80_70', 'Q80_71', 'Q80_72', 'Q80_73', 'R12', 'Q80_75', 'R13', 'R14', 'Q80_78', 'R17', 'Q80_80', 'Q80_81', 'Q80_82', 'Q80_83', 'Q80_84', 'Q80_85', 'R16', 'Q80_87', 'Q80_88', 'Q80_89', 'Q80_90', 'Q80_91', 'Q80_92', 'Q80_93', 'Q80_94', 'Q80_95', 'Q80_96', 'Q80_97', 'R3', 'Q80_99', 'Q80_100', 'Q80_101', 'Q80_102', 'Q80_103', 'Q80_104', 'Q80_105')]
-#create first item removal data frame all items (105).
+# import data
+## All datasets are publicly available on OSF <link>
+# 'Sample_1 = EFA, consruct validity, measurement invariance
+# 'Sample_2_3' = CFA
+# 'Sample_4' = CFA
+# 'Sample_2' = correlation matrix
+# 'Sample_3' = correlation matrix and incremental prediction
+## dataframes 
+# df1 from ('Sample_1')= first round EFA
+# df2 (from 'Sample_1') = second round EFA
+# df3 (from 'Sample_1') = third round EFA
+# df4 (from 'Sample_1') = fourth round EFA
+# df5 (from 'Sample_2') = sample 2 corrmatrix/regression
+# df6 (from 'Sample_3')= sample 3 corrmatrix/regression and incremental prediction
+
+# make a data frame for each round of EFA which can be used later as input for corr matrix and manually setting factors 
+# Begin with exploratory factor analysis
+# data (df) = 'Sample_1' on OSF
+df1 <- df[,c(Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 
+            'Q80_6', 'Q80_7', 'Q80_8', 'Q80_9', 'R9', 'Q80_11', 
+            'Q80_12', 'Q80_13', 'Q80_14', 'Q80_15', 'R4', 'Q80_17',
+            'R1', 'Q80_19', 'R5', 'Q80_21', 'Q80_22', 'Q80_23', 'R6',
+            'Q80_25', 'Q80_26', 'Q80_27', 'Q80_28', 'Q80_29', 'Q80_30',
+            'R18', 'Q80_32', 'R21', 'Q80_34', 'Q80_35', 'Q80_36', 'Q80_37',
+            'Q80_38', 'Q80_39', 'R19', 'Q80_41', 'Q80_42', 'Q80_43', 'R20',
+            'Q80_45', 'Q80_46', 'R8', 'Q80_48', 'Q80_49', 'Q80_50', 'Q80_51', 
+            'Q80_52', 'Q80_53', 'Q80_54', 'Q80_55', 'Q80_56', 'Q80_57', 'Q80_58', 
+            'Q80_59', 'Q80_60', 'R2', 'R7', 'Q80_63', 'Q80_64', 'Q80_65', 'R15', 
+            'Q80_67', 'Q80_68', 'Q80_69', 'Q80_70', 'Q80_71', 'Q80_72', 'Q80_73', 
+            'R12', 'Q80_75', 'R13', 'R14', 'Q80_78', 'R17', 'Q80_80', 'Q80_81',
+            'Q80_82', 'Q80_83', 'Q80_84', 'Q80_85', 'R16', 'Q80_87', 'Q80_88', 
+            'Q80_89', 'Q80_90', 'Q80_91', 'Q80_92', 'Q80_93', 'Q80_94', 'Q80_95',
+            'Q80_96', 'Q80_97', 'R3', 'Q80_99', 'Q80_100', 'Q80_101', 'Q80_102',
+            'Q80_103', 'Q80_104', 'Q80_105')] #create first item removal data frame all items (105).
+            
 # checks
 # missingness check
 colSums(is.na(df1)) 
@@ -55,17 +86,22 @@ fa.parallel(df1, fa="fa") # parallel analysis suggests 7 factors
 
 fa.parallel(df1, fa="fa") # Parallal analysis suggests 7 factors
 
-# make a data frame for each round which can be used later as input for corr matrix and manually setting factors 
-# df1 = first round EFA
-# df2 = second round EFA
-# df3 = third round EFA
-# df4 = fourth round EFA
-# df5 = sample 2 corrmatrix/regression
-# df6 = sample 3 corrmatrix/regression
-
 jmv::efa(
   data = df1,
-    vars = vars(Q80_1, R11, R10, Q80_4, Q80_5, Q80_6, Q80_7, Q80_8, Q80_9, R9, Q80_11, Q80_12, Q80_13, Q80_14, Q80_15, R4, Q80_17, R1, Q80_19, R5, Q80_21, Q80_22, Q80_23, R6, Q80_25, Q80_26, Q80_27, Q80_28, Q80_29, Q80_30, R18, Q80_32, R21, Q80_34, Q80_35, Q80_36, Q80_37, Q80_38, Q80_39, R19, Q80_41, Q80_42, Q80_43, R20, Q80_45, Q80_46, R8, Q80_48, Q80_49, Q80_50, Q80_51, Q80_52, Q80_53, Q80_54, Q80_55, Q80_56, Q80_57, Q80_58, Q80_59, Q80_60, R2, R7, Q80_63, Q80_64, Q80_65, R15, Q80_67, Q80_68, Q80_69, Q80_70, Q80_71, Q80_72, Q80_73, R12, Q80_75, R13, R14, Q80_78, R17, Q80_80, Q80_81, Q80_82, Q80_83, Q80_84, Q80_85, R16, Q80_87, Q80_88, Q80_89, Q80_90, Q80_91, Q80_92, Q80_93, Q80_94, Q80_95, Q80_96, Q80_97, R3, Q80_99, Q80_100, Q80_101, Q80_102, Q80_103, Q80_104, Q80_105),
+    vars = vars(Q80_1, R11, R10, Q80_4, Q80_5, Q80_6, Q80_7, 
+                Q80_8, Q80_9, R9, Q80_11, Q80_12, Q80_13, Q80_14, 
+                Q80_15, R4, Q80_17, R1, Q80_19, R5, Q80_21, Q80_22,
+                Q80_23, R6, Q80_25, Q80_26, Q80_27, Q80_28, Q80_29, 
+                Q80_30, R18, Q80_32, R21, Q80_34, Q80_35, Q80_36, Q80_37,
+                Q80_38, Q80_39, R19, Q80_41, Q80_42, Q80_43, R20, Q80_45, 
+                Q80_46, R8, Q80_48, Q80_49, Q80_50, Q80_51, Q80_52, Q80_53,
+                Q80_54, Q80_55, Q80_56, Q80_57, Q80_58, Q80_59, Q80_60, R2,
+                R7, Q80_63, Q80_64, Q80_65, R15, Q80_67, Q80_68, Q80_69, Q80_70,
+                Q80_71, Q80_72, Q80_73, R12, Q80_75, R13, R14, Q80_78, R17, Q80_80,
+                Q80_81, Q80_82, Q80_83, Q80_84, Q80_85, R16, Q80_87, Q80_88, 
+                Q80_89, Q80_90, Q80_91, Q80_92, Q80_93, Q80_94, Q80_95, Q80_96,
+                Q80_97, R3, Q80_99, Q80_100, Q80_101, Q80_102, Q80_103, Q80_104, 
+                Q80_105),
     extraction = "pa", # principal axis factoring 
     hideLoadings = 0.32, # initially suppress < .32 loadings
     sortLoadings = TRUE,
@@ -242,6 +278,7 @@ lavInspect(fit_mod4f_2order, what = "implied") #2. the better 1 & 2 are, the bet
 measurementInvariance(model = model_4f, # replace with appropriate lavaan figure
                       data = df, group = "Q11_Gender", # look on OSF data dictionary for gender variable
                       strict = TRUE)
+                      
 summary(measurementInvariance(model = model_4f, data = df, group = "Q11_Gender" # gender variable, strict = TRUE))
 
 #fit indices
@@ -302,10 +339,8 @@ flattenCorrMatrix <- function(cormat, pmat) {
 }
 
 flattenCorrMatrix(res1$r, res1$P)
-```
 
 ## sample 3
-```{r}
 # data = 'Sample_3' on OSF
 
 df6 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
