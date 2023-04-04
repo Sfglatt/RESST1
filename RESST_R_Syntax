@@ -479,27 +479,6 @@ savehistory(file = ".Rhistory")
 ```
 
 #references 
-```{r}
-version$version.string 
-citation("tidyverse")
-citation("ggplot2")
-citation("ggthemes")
-citation("lavaan")
-citation("lavaanPlot")
-citation("knitr")
-citation("psych")
-citation("semPlot")
-citation("semTools")
-citation("wesanderson")
-citation("mosaic")
-citation("dplyr")
-citation("GPArotation")
-citation("jmv")
-citation("corrplot")
-citation("readxl")
-citation("ltm")
-citation("cocron")
-citation("Hmisc")
 
 ##[1] "R version 4.2.2 (2022-10-31 ucrt)"
 
