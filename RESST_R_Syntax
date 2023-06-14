@@ -28,13 +28,13 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 
 # import data
 ## All datasets are publicly available on OSF <link>
-# 'Sample_1 = EFA, consruct validity, measurement invariance
+# 'Sample_1 = EFA, construct validity, measurement invariance
 # 'Sample_2_3' = CFA
 # 'Sample_4' = CFA
 # 'Sample_2' = correlation matrix
 # 'Sample_3' = correlation matrix and incremental prediction
-## dataframes 
-# df1 from ('Sample_1')= first round EFA
+## data frames 
+# df1 (from 'Sample_1')= first round EFA
 # df2 (from 'Sample_1') = second round EFA
 # df3 (from 'Sample_1') = third round EFA
 # df4 (from 'Sample_1') = fourth round EFA
@@ -44,7 +44,7 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 # make a data frame for each round of EFA which can be used later as input for corr matrix and manually setting factors 
 # Begin with exploratory factor analysis
 # data (df) = 'Sample_1' on OSF
-df1 <- df[,c(Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 
+df1 <- df[,c('Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 
             'Q80_6', 'Q80_7', 'Q80_8', 'Q80_9', 'R9', 'Q80_11', 
             'Q80_12', 'Q80_13', 'Q80_14', 'Q80_15', 'R4', 'Q80_17',
             'R1', 'Q80_19', 'R5', 'Q80_21', 'Q80_22', 'Q80_23', 'R6',
