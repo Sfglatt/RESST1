@@ -24,7 +24,7 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 # import data
 ## All datasets are publicly available on OSF <link>
 # 'Sample_1' = EFA, construct validity, measurement invariance
-# 'Sample_2_3' = CFA
+# 'Sample_2_3_collapsed' = CFA
 # 'Sample_4' = CFA
 # 'Sample_2' = correlation matrix
 # 'Sample_3' = correlation matrix and incremental prediction
@@ -235,7 +235,7 @@ fa_5 # four factors has best fit
 
 ###confirmatory factor analysis###
 # standard CFA
-# data = 'Sample_1', 'Sample_2_3', and 'Sample_4' on OSF
+# data = 'Sample_1', 'Sample_2_3_collapsed', and 'Sample_4' on OSF
 ## Variables consistent between samples
 
 model_4f <- "
@@ -253,7 +253,7 @@ summary(fit_mod4f, fit.measures = TRUE, standardized = TRUE)
 semPaths(fit_mod4f, "par", weighted = FALSE, nCharNodes = 7, shapeMan = "rectangle", sizeMan = 8, sizeMan2 = 5)
 
 # second-order CFA
-# data = 'Sample_1', 'Sample_2_3', and 'Sample_4' on OSF
+# data = 'Sample_1', 'Sample_2_3_collapsed', and 'Sample_4' on OSF
 # RESST variables are consistent between samples 1, 2, 2_3, and 4. 
 
 model_4f_2order <- "
