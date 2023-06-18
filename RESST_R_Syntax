@@ -329,7 +329,7 @@ compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 # Pearson correlations between RESST and related/unrelated measures
 ## sample 2
 # data = 'Sample_2' on OSF
-data <- read_excel("Sample_2.xlsx") #R3 edit
+data <- read_excel("Sample_2.xlsx") 
 df5 <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
              'RESST.social.worthT1','RESST.self.understandT1',
               'Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
