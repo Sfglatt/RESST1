@@ -28,13 +28,13 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 # 'Sample_4' = CFA
 # 'Sample_2' = correlation matrix
 # 'Sample_3' = correlation matrix and incremental prediction
-# 'Test_retest' = correlation matrix for test-retest 
+# 'Sample_test_retest' = correlation matrix for test-retest 
 ## data frames that will be made in analysis
 # df1 (from 'Sample_1')= first round EFA
 # df2 (from 'Sample_1') = second round EFA
 # df3 (from 'Sample_1') = third round EFA
 # df4 (from 'Sample_1') = fourth round EFA
-# df5 (from 'Test_retest') = test retest correlations
+# df5 (from 'Sample_test_retest') = test retest correlations
 # df6 (from 'Sample_2') = sample 2 corrmatrix/regression
 # df7 (from 'Sample_3')= sample 3 corrmatrix/regression and incremental prediction
 
@@ -329,7 +329,7 @@ compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
            return.df = TRUE) # composite reliability
 
 # Test retest scores
-## sample called "Test_retest" on OSF
+## From "Sample_test_retest" on OSF
 data <- read_excel("Test_retest.xlsx") 
 df5_row <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth','TP1_RESST_Self_Understanding')]
 df5_col <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth','TP1_RESST_Self_Understanding')]
