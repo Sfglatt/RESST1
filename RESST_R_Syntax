@@ -1,9 +1,4 @@
----
 title: "R_RESST_Syntax"
-output:
-  word_document: default
-  html_notebook: default
----
 
 # required packages
 if (!require("tidyverse")) {install.packages("tidyverse"); require("tidyverse")}
@@ -28,7 +23,7 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 
 # import data
 ## All datasets are publicly available on OSF <link>
-# 'Sample_1 = EFA, construct validity, measurement invariance
+# 'Sample_1' = EFA, construct validity, measurement invariance
 # 'Sample_2_3' = CFA
 # 'Sample_4' = CFA
 # 'Sample_2' = correlation matrix
@@ -41,9 +36,16 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 # df5 (from 'Sample_2') = sample 2 corrmatrix/regression
 # df6 (from 'Sample_3')= sample 3 corrmatrix/regression and incremental prediction
 
-# make a data frame for each round of EFA which can be used later as input for corr matrix and manually setting factors 
+# make a data frame for each round of EFA which can be used later as input for correlation matrix and manually setting factors 
 # Begin with exploratory factor analysis
 # data (df) = 'Sample_1' on OSF
+df <- read_excel("Sample_1.xlsx") 
+
+# Create Q11_Gender variable
+df$Q11_Gender <-NA
+df$Q11_Gender[df$Q11==1] <- 1
+df$Q11_Gender[df$Q11==2] <- 2
+
 df1 <- df[,c('Q80_1', 'R11', 'R10', 'Q80_4', 'Q80_5', 
             'Q80_6', 'Q80_7', 'Q80_8', 'Q80_9', 'R9', 'Q80_11', 
             'Q80_12', 'Q80_13', 'Q80_14', 'Q80_15', 'R4', 'Q80_17',
@@ -77,14 +79,14 @@ ev$values
 # Scree and parallel analysis
 par(mar = c(1, 1, 1, 1)) # adjust plot size for x error
 scree(df1, pc=FALSE) # Scree plot. 7-8 factors
-fa.parallel(df1, fa="fa") # parallel analysis suggests 7 factors
+fa.parallel(df1) # parallel analysis suggests 7 factors
 
 ###exploratory factor analysis###
 # data = 'Sample_1' on OSF
 # 4 rounds, criteria for removal = items with low communalities (<.30), low factor loadings (<.50), and high cross-loadings (>.40) and theoretical model fit
 # round one (all 105 items)
 
-fa.parallel(df1, fa="fa") # Parallal analysis suggests 7 factors
+fa.parallel(df1, fa="fa") # Parallel analysis suggests 7 factors
 
 jmv::efa(
   data = df1,
@@ -127,7 +129,7 @@ df2 <- df1[,c('R1','R2','R3','R4','R5',
               'Q80_82','Q80_83','Q80_84','Q80_85','Q80_89',
               'Q80_9','Q80_92','Q80_93','Q80_99')] # create second data frame
 
-fa.parallel(df2, fa="fa") # Parallal analysis suggests 5 factors 
+fa.parallel(df2) # Parallal analysis suggests 5 factors 
 
 jmv::efa(
   data = df2,
@@ -177,7 +179,7 @@ data = df3,
   factorSummary = TRUE,
   modelFit = TRUE,
   kmo = TRUE,
-  bartlett = TRUE) # remove 4 items
+  bartlett = TRUE) # look at modification indices and remove 4 items with that and previous considerations
 
 # round four (remaining 21 items)
 
@@ -187,7 +189,7 @@ df4 <- df1[,c('R1','R2','R3','R4','R5',
               'R16','R17','R18','R19','R20',
               'R21')] # create fourth data frame
 
-fa.parallel(df4, fa="fa") # suggests 4 factors 
+fa.parallel(df4) # suggests 4 factors 
 
 jmv::efa(
   data = df4,
@@ -231,7 +233,7 @@ fa_5 # four factors has best fit
 
 ###confirmatory factor analysis###
 # standard CFA
-# data = 'Sample_1', 'Sample_2-3', and 'Sample_4' on OSF
+# data = 'Sample_1', 'Sample_2_3', and 'Sample_4' on OSF
 ## Variables consistent between samples
 
 model_4f <- "
@@ -242,15 +244,15 @@ understand =~ R18 + R19 + R20 + R21
 "
 
 # Model fit
-fit_mod4f <- cfa(model_4f, data = df)
+fit_mod4f <- lavaan::cfa(model_4f, data = df)
 summary(fit_mod4f, fit.measures = TRUE, standardized = TRUE)
 
 # Model figure
 semPaths(fit_mod4f, "par", weighted = FALSE, nCharNodes = 7, shapeMan = "rectangle", sizeMan = 8, sizeMan2 = 5)
 
 # second-order CFA
-# data = 'Sample_1', 'Sample_2-3', and 'Sample_4' on OSF
-# RESST variables consistent between samples
+# data = 'Sample_1', 'Sample_2_3', and 'Sample_4' on OSF
+# RESST variables are consistent between samples 1, 2, 2_3, and 4. 
 
 model_4f_2order <- "
 self =~  R1 + R2 + R3 + R4 + R5 + R6 + R7
@@ -259,13 +261,17 @@ social =~ R12 + R13 + R14 + R15 + R16 + R17
 understand =~ R18 + R19 + R20 + R21
 RESST =~ self + life + social + understand 
 "
+
 # higher order fit
-fit_mod4f_2order <- cfa(model_4f_2order, df)
+fit_mod4f_2order <- lavaan::cfa(model_4f_2order, df)
 summary(fit_mod4f_2order, fit.measures = TRUE, standardized = TRUE)
 
 # higher order visual
 semPaths(fit_mod4f_2order, "std", weighted = FALSE, nCharNodes = 7, 
          shapeMan = "rectangle", sizeMan = 8, sizeMan2 = 5)
+
+# Which fits better - correlated factors or higher order model
+summary(compareFit(fit_mod4f, fit_mod4f_2order)) # very small significant difference on all indices, both fit data well, take theoretical considerations into account. Choose higher order. 
 
 # variance-covariance matrix
 lavInspect(fit_mod4f_2order, what = "sampstat") #1
@@ -275,13 +281,24 @@ lavInspect(fit_mod4f_2order, what = "implied") #2. the better 1 & 2 are, the bet
 # Measurement invariance
 # data = 'Sample_1' on OSF
 
-measurementInvariance(model = model_4f, # replace with appropriate lavaan figure
-                      data = df, group = "Q11_Gender", # look on OSF data dictionary for gender variable
-                      strict = TRUE)
-                      
-summary(measurementInvariance(model = model_4f, data = df, group = "Q11_Gender" # gender variable, strict = TRUE))
+# Filter out cases without gender binary, as too few cases in Gender = 3 category
+df_mi <- df[df$Q11!=3,]
 
-#fit indices
+measurementInvariance(model = model_4f, # replace with appropriate lavaan figure
+                      data = df_mi, group = "Q11_Gender", 
+                      strict = TRUE) #R3 edit to data name
+                      
+summary(measurementInvariance(model = model_4f, data = df_mi, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
+
+# Check invariance of higher-order model
+measurementInvariance(model = model_4f_2order, # replace with appropriate lavaan figure
+                      data = df_mi, group = "Q11_Gender", # look on OSF data dictionary for gender variable
+                      strict = TRUE) # edit to data name
+
+summary(measurementInvariance(model = model_4f_2order, data = df_mi, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
+
+
+# fit indices
 # data = 'Sample_1' on OSF
 
 AVE(fit_mod4f, obs.var = TRUE, 
@@ -301,7 +318,7 @@ cronbach.alpha.CI(.87, 502, 4, conf.level = 0.95)
 
 omegaFromSem(fit_mod4f,m=NULL,flip=TRUE,plot=TRUE) # account for variances
 
-reliabilityL2(fit_mod4f_2order2, 'RESST') # omega higher order (L2)
+reliabilityL2(fit_mod4f_2order, 'RESST') # omega higher order (L2)
 
 compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
            config = character(0), shared = character(0), higher = character(0),
@@ -312,7 +329,7 @@ compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 # Pearson correlations between RESST and related/unrelated measures
 ## sample 2
 # data = 'Sample_2' on OSF
-
+data <- read_excel("Sample_2.xlsx") #R3 edit
 df5 <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
              'RESST.social.worthT1','RESST.self.understandT1',
               'Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
@@ -340,9 +357,17 @@ flattenCorrMatrix <- function(cormat, pmat) {
 
 flattenCorrMatrix(res1$r, res1$P)
 
+# An easier way to do this
+df5_row <- data[,c('Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
+                   'FSCQ.sim','FSCQ.vivid','SWLS','Q51','SBQR')]
+df5_col <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
+                  'RESST.social.worthT1','RESST.self.understandT1')]
+print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
+
+
 ## sample 3
 # data = 'Sample_3' on OSF
-
+data <- read_excel("Sample_3.xlsx")
 df6 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
              'RESST.Social.worth','RESST.Self.understanding',
               'RAS.total','RAS.NDS','RAS.PCH','RAS.WAH','RAS.GSO',
@@ -382,6 +407,7 @@ regr_RAS.WAH <- lm(RAS.WAH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.
 regr_RAS.GSO <- lm(RAS.GSO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
 regr_RAS.ROO <- lm(RAS.ROO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
 regr_RSE <- lm(RSE ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+
 # model summaries
 summary(regr_SBQR)
 summary(regr_SBQR_item_4)
@@ -429,20 +455,19 @@ regr_SBQR.1 <- lm(SBQR ~ RAS.total, df6)
 regr_SBQR.2 <- lm(SBQR ~ RAS.total + RESST.Total, df6)
 regr_SBQR_item_4.1 <- lm(Q51 ~ RAS.total, df6)
 regr_SBQR_item_4.2 <- lm(Q51 ~ RAS.total + RESST.Total, df6)
-```
 
 # model fit differences
 summary(regr_RSE.1)
-summary(regr_RSE.2) # calcuate R-sq change
+summary(regr_RSE.2) # calculate R-sq change
 anova(regr_RSE.1,regr_RSE.2) # p-value between models
 
 summary(regr_MLQ.P.1)
 summary(regr_MLQ.P.2)
 anova(regr_MLQ.P.1,regr_MLQ.P.2)
 
-summary(regr_QOl.1)
-summary(regr_QOl.2)
-anova(regr_QOl.1,regr_QOl.2)
+summary(regr_QOL.1)          
+summary(regr_QOL.2)          
+anova(regr_QOL.1,regr_QOL.2) 
 
 summary(regr_INQ.1)
 summary(regr_INQ.2)
@@ -468,21 +493,19 @@ summary(regr_SBQR_item_4.1)
 summary(regr_SBQR_item_4.2)
 anova(regr_SBQR_item_4.1,regr_SBQR_item_4.2)
 
-```
 
 # save .RData
-```{r}
 save.image(file = paste0(id_name,".RData"))
 sessionInfo()
 loadhistory(file = ".Rhistory")
 savehistory(file = ".Rhistory")
-```
 
-#references 
 
-##[1] "R version 4.2.2 (2022-10-31 ucrt)"
+# references 
 
-#T o cite package ‘tidyverse’ in publications use:
+## [1] "R version 4.2.2 (2022-10-31 ucrt)"
+
+# To cite package ‘tidyverse’ in publications use:
 ## Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
 
 # To cite ggplot2 in publications, please use
@@ -535,7 +558,3 @@ savehistory(file = ".Rhistory")
 
 # To cite package ‘Hmisc’ in publications use:
 ## Harrell Jr F (2023). _Hmisc: Harrell Miscellaneous_. R package version 4.8-0, <https://CRAN.R-project.org/package=Hmisc>.
-
-```
-```
-
