@@ -380,7 +380,7 @@ data <- read_excel("Sample_3.xlsx")
 df7 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
              'RESST.Social.worth','RESST.Self.understanding',
               'RAS.total','RAS.NDS','RAS.PCH','RAS.WAH','RAS.GSO',
-              'RAS.ROO','RSE','INQ.tot','INQ.PB',
+              'RAS.ROO','RSE','INQ.PB',
               'INQ.TB','MLQ.Pres','MLQ.Search','FSCQ','SBQR', 'Q51', 'QOL')]
 
 cor(df7, method = "pearson") # correlation matrix
@@ -403,7 +403,6 @@ regr_FSCQ.viv <- lm(FSCQ.vivid ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESS
 regr_SWLS <- lm(SWLS ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
 
 # data = 'Sample_3' on OSF
-regr_INQ <- lm(INQ.tot ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
 regr_INQ.PB <- lm(INQ.PB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
 regr_INQ.TB <- lm(INQ.TB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
 regr_QOLS <- lm(QOL ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
@@ -429,7 +428,6 @@ summary(regr_FSCQ.pos)
 summary(regr_FSCQ.sim)
 summary(regr_FSCQ.viv)
 summary(regr_SWLS)
-summary(regr_INQ)
 summary(regr_INQ.TB)
 summary(regr_INQ.PB)
 summary(regr_QOLS)
@@ -452,8 +450,6 @@ regr_MLQ.P.1 <- lm(MLQ.Pres ~ RAS.total, df7)
 regr_MLQ.P.2 <- lm(MLQ.Pres ~ RAS.total + RESST.Total, df7)
 regr_QOL.1 <- lm(QOL ~ RAS.total, df7)
 regr_QOL.2 <- lm(QOL ~ RAS.total + RESST.Total, df7)
-regr_INQ.1 <- lm(INQ.tot ~ RAS.total, df7)
-regr_INQ.2 <- lm(INQ.tot ~ RAS.total + RESST.Total, df7)
 regr_INQ.PB.1 <- lm(INQ.PB ~ RAS.total, df7)
 regr_INQ.PB.2 <- lm(INQ.PB ~ RAS.total + RESST.Total, df7)
 regr_INQ.TB.1 <- lm(INQ.TB ~ RAS.total, df7)
@@ -477,10 +473,6 @@ anova(regr_MLQ.P.1,regr_MLQ.P.2)
 summary(regr_QOL.1)          
 summary(regr_QOL.2)          
 anova(regr_QOL.1,regr_QOL.2) 
-
-summary(regr_INQ.1)
-summary(regr_INQ.2)
-anova(regr_INQ.1,regr_INQ.2)
 
 summary(regr_INQ.PB.1)
 summary(regr_INQ.PB.2)
