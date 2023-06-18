@@ -332,8 +332,8 @@ compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
 data <- read_excel("Sample_test_retest.xlsx") 
 df5_row <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth',
             'TP1_RESST_Self_Understanding')]
-df5_col <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth',
-            'TP1_RESST_Self_Understanding')]
+df5_col <- data[,c('TP2_RESST_Total','TP2_RESST_Self_Worth','TP2_RESST_Life_Worth','TP2_RESST_Social_Worth',
+            'TP2_RESST_Self_Understanding')]
 print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
 
 # Pearson correlations between RESST and related/unrelated measures
@@ -372,7 +372,7 @@ df6_row <- data[,c('Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
                    'FSCQ.sim','FSCQ.vivid','SWLS','Q51','SBQR')]
 df6_col <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
                   'RESST.social.worthT1','RESST.self.understandT1')]
-print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
+print(corr.test(df6_row, df6_col, adjust="holm"), digits=4)
 
 ## sample 3
 # data = 'Sample_3' on OSF
