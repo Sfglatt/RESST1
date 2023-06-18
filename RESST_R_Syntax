@@ -28,13 +28,15 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 # 'Sample_4' = CFA
 # 'Sample_2' = correlation matrix
 # 'Sample_3' = correlation matrix and incremental prediction
-## data frames 
+# 'Test_retest' = correlation matrix for test-retest 
+## data frames that will be made in analysis
 # df1 (from 'Sample_1')= first round EFA
 # df2 (from 'Sample_1') = second round EFA
 # df3 (from 'Sample_1') = third round EFA
 # df4 (from 'Sample_1') = fourth round EFA
-# df5 (from 'Sample_2') = sample 2 corrmatrix/regression
-# df6 (from 'Sample_3')= sample 3 corrmatrix/regression and incremental prediction
+# df5 (from 'Test_retest') = test retest correlations
+# df6 (from 'Sample_2') = sample 2 corrmatrix/regression
+# df7 (from 'Sample_3')= sample 3 corrmatrix/regression and incremental prediction
 
 # make a data frame for each round of EFA which can be used later as input for correlation matrix and manually setting factors 
 # Begin with exploratory factor analysis
@@ -326,18 +328,26 @@ compRelSEM(fit_mod4f, obs.var = TRUE, tau.eq = FALSE, ord.scale = TRUE,
            omit.indicators = character(0), omit.imps = c("no.conv", "no.se"),
            return.df = TRUE) # composite reliability
 
+# Test retest scores
+## sample called "Test_retest" on OSF
+data <- read_excel("Test_retest.xlsx") 
+df5_row <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth','TP1_RESST_Self_Understanding')]
+df5_col <- data[,c('TP1_RESST_Total','TP1_RESST_Self_Worth','TP1_RESST_Life_Worth','TP1_RESST_Social_Worth','TP1_RESST_Self_Understanding')]
+print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
+
+
 # Pearson correlations between RESST and related/unrelated measures
 ## sample 2
 # data = 'Sample_2' on OSF
 data <- read_excel("Sample_2.xlsx") 
-df5 <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
+df6 <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
              'RESST.social.worthT1','RESST.self.understandT1',
               'Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
               'FSCQ.sim','FSCQ.vivid','SWLS','Q51','SBQR')]
 
-cor(df5, method = "pearson") # correlation matrix
+cor(df6, method = "pearson") # correlation matrix
 
-res1 <- rcorr(as.matrix(df5)) # for p-values
+res1 <- rcorr(as.matrix(df6)) # for p-values
 
 # Extract the correlation coefficients
 res1$r
@@ -358,9 +368,9 @@ flattenCorrMatrix <- function(cormat, pmat) {
 flattenCorrMatrix(res1$r, res1$P)
 
 # An easier way to do this
-df5_row <- data[,c('Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
+df6_row <- data[,c('Dep_Sum','anx_Sum','stress_Sum','FSCQ','FSCQ.pos',
                    'FSCQ.sim','FSCQ.vivid','SWLS','Q51','SBQR')]
-df5_col <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
+df6_col <- data[,c('RESST.Total.T1','RESST.Self.Worth.T1','RESST.Lifeworth.T1',
                   'RESST.social.worthT1','RESST.self.understandT1')]
 print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
 
@@ -368,45 +378,45 @@ print(corr.test(df5_row, df5_col, adjust="holm"), digits=4)
 ## sample 3
 # data = 'Sample_3' on OSF
 data <- read_excel("Sample_3.xlsx")
-df6 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
+df7 <- data[,c('RESST.Total','RESST.Self.Worth','RESST.Life.Worth',
              'RESST.Social.worth','RESST.Self.understanding',
               'RAS.total','RAS.NDS','RAS.PCH','RAS.WAH','RAS.GSO',
               'RAS.ROO','RSE','INQ.tot','INQ.PB',
               'INQ.TB','MLQ.Pres','MLQ.Search','FSCQ','SBQR', 'Q51', 'QOL')]
 
-cor(df6, method = "pearson") # correlation matrix
+cor(df7, method = "pearson") # correlation matrix
 
-res2 <- rcorr(as.matrix(df6)) # for p-values
+res2 <- rcorr(as.matrix(df7)) # for p-values
 
 flattenCorrMatrix(res2$r, res2$P)
 
 # multiple regression RESST subscales with outcome variables
 # data = 'Sample_2' on OSF
-regr_SBQR <- lm(SBQR ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_SBQR_item_4 <- lm(Q51 ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_depression <- lm(Dep_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_anxiety <- lm(anx_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_stress <- lm(stress_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_FSCQ <- lm(FSCQ ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_FSCQ.pos <- lm(FSCQ.pos ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_FSCQ.sim <- lm(FSCQ.sim ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_FSCQ.viv <- lm(FSCQ.vivid ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
-regr_SWLS <- lm(SWLS ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df5)
+regr_SBQR <- lm(SBQR ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_SBQR_item_4 <- lm(Q51 ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_depression <- lm(Dep_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_anxiety <- lm(anx_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_stress <- lm(stress_Sum ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_FSCQ <- lm(FSCQ ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_FSCQ.pos <- lm(FSCQ.pos ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_FSCQ.sim <- lm(FSCQ.sim ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_FSCQ.viv <- lm(FSCQ.vivid ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
+regr_SWLS <- lm(SWLS ~ RESST.Self.Worth.T1 + RESST.Lifeworth.T1 + RESST.social.worthT1 + RESST.self.understandT1, df6)
 
 # data = 'Sample_3' on OSF
-regr_INQ <- lm(INQ.tot ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_INQ.PB <- lm(INQ.PB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_INQ.TB <- lm(INQ.TB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_QOLS <- lm(QOL ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_MLQ.P <- lm(MLQ.Pres ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_MLQ.S <- lm(MLQ.Search ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS <- lm(RAS.total ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS.NDS <- lm(RAS.NDS ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS.PCH <- lm(RAS.PCH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS.WAH <- lm(RAS.WAH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS.GSO <- lm(RAS.GSO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RAS.ROO <- lm(RAS.ROO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
-regr_RSE <- lm(RSE ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df6)
+regr_INQ <- lm(INQ.tot ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_INQ.PB <- lm(INQ.PB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_INQ.TB <- lm(INQ.TB ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_QOLS <- lm(QOL ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_MLQ.P <- lm(MLQ.Pres ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_MLQ.S <- lm(MLQ.Search ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS <- lm(RAS.total ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS.NDS <- lm(RAS.NDS ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS.PCH <- lm(RAS.PCH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS.WAH <- lm(RAS.WAH ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS.GSO <- lm(RAS.GSO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RAS.ROO <- lm(RAS.ROO ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
+regr_RSE <- lm(RSE ~ RESST.Self.Worth + RESST.Life.Worth + RESST.Social.worth + RESST.Self.understanding, df7)
 
 # model summaries
 summary(regr_SBQR)
@@ -437,24 +447,24 @@ summary(regr_RSE)
 # RESST vs RAS incremental prediction
 # data = 'Sample_3' on OSF
 
-regr_RSE.1 <- lm(RSE ~ RAS.total, df6)
-regr_RSE.2 <- lm(RSE ~ RAS.total + RESST.Total, df6)
-regr_MLQ.P.1 <- lm(MLQ.Pres ~ RAS.total, df6)
-regr_MLQ.P.2 <- lm(MLQ.Pres ~ RAS.total + RESST.Total, df6)
-regr_QOL.1 <- lm(QOL ~ RAS.total, df6)
-regr_QOL.2 <- lm(QOL ~ RAS.total + RESST.Total, df6)
-regr_INQ.1 <- lm(INQ.tot ~ RAS.total, df6)
-regr_INQ.2 <- lm(INQ.tot ~ RAS.total + RESST.Total, df6)
-regr_INQ.PB.1 <- lm(INQ.PB ~ RAS.total, df6)
-regr_INQ.PB.2 <- lm(INQ.PB ~ RAS.total + RESST.Total, df6)
-regr_INQ.TB.1 <- lm(INQ.TB ~ RAS.total, df6)
-regr_INQ.TB.2 <- lm(INQ.TB ~ RAS.total + RESST.Total, df6)
-regr_FSCQ.1 <- lm(FSCQ ~ RAS.total, df6)
-regr_FSCQ.2 <- lm(FSCQ ~ RAS.total + RESST.Total, df6)
-regr_SBQR.1 <- lm(SBQR ~ RAS.total, df6)
-regr_SBQR.2 <- lm(SBQR ~ RAS.total + RESST.Total, df6)
-regr_SBQR_item_4.1 <- lm(Q51 ~ RAS.total, df6)
-regr_SBQR_item_4.2 <- lm(Q51 ~ RAS.total + RESST.Total, df6)
+regr_RSE.1 <- lm(RSE ~ RAS.total, df7)
+regr_RSE.2 <- lm(RSE ~ RAS.total + RESST.Total, df7)
+regr_MLQ.P.1 <- lm(MLQ.Pres ~ RAS.total, df7)
+regr_MLQ.P.2 <- lm(MLQ.Pres ~ RAS.total + RESST.Total, df7)
+regr_QOL.1 <- lm(QOL ~ RAS.total, df7)
+regr_QOL.2 <- lm(QOL ~ RAS.total + RESST.Total, df7)
+regr_INQ.1 <- lm(INQ.tot ~ RAS.total, df7)
+regr_INQ.2 <- lm(INQ.tot ~ RAS.total + RESST.Total, df7)
+regr_INQ.PB.1 <- lm(INQ.PB ~ RAS.total, df7)
+regr_INQ.PB.2 <- lm(INQ.PB ~ RAS.total + RESST.Total, df7)
+regr_INQ.TB.1 <- lm(INQ.TB ~ RAS.total, df7)
+regr_INQ.TB.2 <- lm(INQ.TB ~ RAS.total + RESST.Total, df7)
+regr_FSCQ.1 <- lm(FSCQ ~ RAS.total, df7)
+regr_FSCQ.2 <- lm(FSCQ ~ RAS.total + RESST.Total, df7)
+regr_SBQR.1 <- lm(SBQR ~ RAS.total, df7)
+regr_SBQR.2 <- lm(SBQR ~ RAS.total + RESST.Total, df7)
+regr_SBQR_item_4.1 <- lm(Q51 ~ RAS.total, df7)
+regr_SBQR_item_4.2 <- lm(Q51 ~ RAS.total + RESST.Total, df7)
 
 # model fit differences
 summary(regr_RSE.1)
