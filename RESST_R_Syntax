@@ -23,12 +23,12 @@ if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 
 # import data
 ## All datasets are publicly available on OSF <link>
-# 'Sample_1' = EFA, construct validity, measurement invariance
-# 'Sample_2_3_collapsed' = CFA
-# 'Sample_4' = CFA
-# 'Sample_2' = correlation matrix
-# 'Sample_3' = correlation matrix and incremental prediction
-# 'Sample_test_retest' = correlation matrix for test-retest 
+# 'Sample_1' = EFA, construct validity, measurement invariance (502)
+# 'Sample_2_3_collapsed' = CFA (466)
+# 'Sample_4' = CFA (351)
+# 'Sample_2' = correlation matrix (341)
+# 'Sample_3' = correlation matrix and incremental prediction (329)
+# 'Sample_test_retest' = correlation matrix for test-retest (204)
 ## data frames that will be made in analysis
 # df1 (from 'Sample_1')= first round EFA
 # df2 (from 'Sample_1') = second round EFA
