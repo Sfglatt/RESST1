@@ -22,7 +22,7 @@ if (!require("cocron")) {install.packages("cocron"); require("cocron")}
 if (!require("Hmisc")) {install.packages("Hmisc"); require("Hmisc")}
 
 # import data
-## All datasets are publicly available on the Open Science Framework at 
+## All datasets are publicly available on the Open Science Framework at https://osf.io/8dw5p/
 # 'Sample_1' = EFA, construct validity, measurement invariance (502)
 # 'Sample_2_3_collapsed' = CFA (466)
 # 'Sample_4' = CFA (351)
