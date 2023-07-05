@@ -287,17 +287,17 @@ lavInspect(fit_mod4f_2order, what = "implied") #2. the better 1 & 2 are, the bet
 df_mi <- df[df$Q11!=3,]
 
 measurementInvariance(model = model_4f, # replace with appropriate lavaan figure
-                      data = df_mi, group = "Q11_Gender", 
-                      strict = TRUE) #R3 edit to data name
+                      data = df, group = "Q11_Gender", 
+                      strict = TRUE) 
                       
-summary(measurementInvariance(model = model_4f, data = df_mi, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
+summary(measurementInvariance(model = model_4f, data = df, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
 
 # Check invariance of higher-order model
 measurementInvariance(model = model_4f_2order, # replace with appropriate lavaan figure
-                      data = df_mi, group = "Q11_Gender", # look on OSF data dictionary for gender variable
+                      data = df, group = "Q11_Gender", # look on OSF data dictionary for gender variable
                       strict = TRUE) # edit to data name
 
-summary(measurementInvariance(model = model_4f_2order, data = df_mi, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
+summary(measurementInvariance(model = model_4f_2order, data = df, group = "Q11_Gender", strict = TRUE)) #Q11_Gender = gender variable
 
 # fit indices
 # data = 'Sample_1' on OSF
